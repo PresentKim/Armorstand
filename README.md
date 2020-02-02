@@ -1,7 +1,7 @@
 # Armorstand
 플러그인 이름 : ArmorStand
 
-플러그인 버전 : PMMP 3.x.x
+플러그인 호환 API : PMMP 3.x.x
 
 플러그인 사용 :
 (425:0) 아이템을 꺼내 땅을 터치합니다
