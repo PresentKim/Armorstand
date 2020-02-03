@@ -103,7 +103,7 @@ class ArmorStand extends PluginBase implements Listener{
     $task = new ArmorStandTask($this);
     $this->getScheduler()->scheduleRepeatingTask($task, 1);
   }
-  public function onInteract(PlayerInteractEvent $e){
+  public function onJoin(PlayerJoinEvent $e){
   
     $prefix = $this->prefix;
     
