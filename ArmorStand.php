@@ -17,6 +17,7 @@ use pocketmine\event\Listener;
 use pocketmine\plugin\PluginBase;
 
 use pocketmine\Player;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 
 use pocketmine\item\Item;
@@ -73,6 +74,8 @@ class ArmorStand extends PluginBase implements Listener{
    
   public $data, $item, $code, $tag;
   
+  private $cool;
+  
   public $windowId;
   
   public $prefix = "§l§b[알림] §r§7";
@@ -107,6 +110,18 @@ class ArmorStand extends PluginBase implements Listener{
     $player = $e->getPlayer();
     $name = strtolower($player->getName());
     
+    if(!isset($this->cool[$name]){
+
+      $this->cool[$name] = time();
+    }
+  }
+  public function onInteract(PlayerInteractEvent $e){
+  
+    $prefix = $this->prefix;
+    
+    $player = $e->getPlayer();
+    $name = strtolower($player->getName());
+    
     $inventory = $player->getInventory();
     $item = $inventory->getItemInHand();
     $id = $item->getId();
@@ -114,6 +129,12 @@ class ArmorStand extends PluginBase implements Listener{
     $block = $e->getBlock();
     
     $area = AreaProvider::getInstance()->getArea($player->getLevel() ,$block->getX() ,$block->getZ());
+    
+    if(!isset($this->cool[$name]) return true;
+    
+    if($this->cool[$name] == time()) return true;
+    
+    $this->cool[$name] = time();
     
     if(!$player->isOp()){
     
@@ -230,7 +251,7 @@ class ArmorStand extends PluginBase implements Listener{
         $this->data[$name."|".$ran]["leggings"] = $item;
         $this->data[$name."|".$ran]["boots"] = $item;
       
-        $inventory->addItem(Item::get(425, 0, 1));
+        $inventory->removeItem(Item::get(425, 0, 1));
         
         $this->save();
       
