@@ -136,127 +136,59 @@ class ArmorStand extends PluginBase implements Listener{
     
     $this->cool[$name] = time();
     
-    if(!$player->isOp()){
-    
-      if($area instanceof AreaSection){
-
-        if($area->isResident($player)){
+    if($id == 425 && ($player->isOp() || $area instanceof AreaSection && $area->isResident($player))){
+	    $nbt = new CompoundTag("", [ 
+        new ListTag("Pos", [
+          new DoubleTag("", $block->getX() + 0.5),
+          new DoubleTag("", $block->getY() + 1),
+          new DoubleTag("", $block->getZ() + 0.5)
+        ]),
+        new ListTag("Motion", [
+          new DoubleTag("", 0),
+          new DoubleTag("", 0),
+          new DoubleTag("", 0)
+        ]),
+        new ListTag("Rotation",[
+          new FloatTag(0, 0),
+          new FloatTag(0, 0)
+        ])
+      ]);
       
-          if($id == 425){
-          
-            $nbt = new CompoundTag("", [ 
-                         new ListTag("Pos", [
-                         new DoubleTag("", $block->getX() + 0.5),
-                         new DoubleTag("", $block->getY() + 1),
-                         new DoubleTag("", $block->getZ() + 0.5)
-                    ]),
-                         new ListTag("Motion", [
-                         new DoubleTag("", 0),
-                         new DoubleTag("", 0),
-                         new DoubleTag("", 0)
-                    ]),
-                         new ListTag("Rotation",[
-                         new FloatTag(0, 0),
-                         new FloatTag(0, 0)
-                    ])
-            ]);
+      $ran = mt_rand(1, 1000000000);
+      $nbt->setString("owner", $name);
+      $nbt->setString("code", $name."|".$ran);
       
-            $ran = mt_rand(1, 1000000000);
-            $nbt->setString("owner", $name);
-            $nbt->setString("code", $name."|".$ran);
+      $entity = Entity::createEntity("stand", $player->getLevel(), $nbt);
+      $entity->setNameTag("§r§b".$name."§f의 갑옷 거치대");
+      $entity->setItem("hand", Item::get(0, 0, 0));
+      $entity->setItem("helmet", Item::get(0, 0, 0));
+      $entity->setItem("chestplate", Item::get(0, 0, 0));
+      $entity->setItem("leggings", Item::get(0, 0, 0));
+      $entity->setItem("boots", Item::get(0, 0, 0));
+      $entity->setHealth(100000);
+      $entity->setMaxHealth(100000);
+      $entity->setNameTagVisible(true);
+      $entity->setNameTagAlwaysVisible(true);
+      $entity->spawnToAll();
       
-            $entity = Entity::createEntity("stand", $player->getLevel(), $nbt);
-            $entity->setNameTag("§r§b".$name."§f의 갑옷 거치대");
-            $entity->setItem("hand", Item::get(0, 0, 0));
-            $entity->setItem("helmet", Item::get(0, 0, 0));
-            $entity->setItem("chestplate", Item::get(0, 0, 0));
-            $entity->setItem("leggings", Item::get(0, 0, 0));
-            $entity->setItem("boots", Item::get(0, 0, 0));
-            $entity->setHealth(100000);
-            $entity->setMaxHealth(100000);
-            $entity->setNameTagVisible(true);
-            $entity->setNameTagAlwaysVisible(true);
-            $entity->spawnToAll();
+      $item = $this->getNBT(Item::get(0, 0, 0));
       
-            $item = $this->getNBT(Item::get(0, 0, 0));
-      
-            $this->data[$name."|".$ran]["owner"] = $name;
-            $this->data[$name."|".$ran]["tag"] = "§r§b".$name."§f의 갑옷 거치대";
-            $this->data[$name."|".$ran]["yaw"] = 0;
-            //$this->data[$name."|".$ran]["pitch"] = 0; 갑옷거치대는 pitch가 변화가 없더군요... 껄껄
-            $this->data[$name."|".$ran]["scale"] = 100;
-            $this->data[$name."|".$ran]["hand"] = $item;
-            $this->data[$name."|".$ran]["helmet"] = $item;
-            $this->data[$name."|".$ran]["chestplate"] = $item;
-            $this->data[$name."|".$ran]["leggings"] = $item;
-            $this->data[$name."|".$ran]["boots"] = $item;
+      $this->data[$name."|".$ran]["owner"] = $name;
+      $this->data[$name."|".$ran]["tag"] = "§r§b".$name."§f의 갑옷 거치대";
+      $this->data[$name."|".$ran]["yaw"] = 0;
+      //$this->data[$name."|".$ran]["pitch"] = 0; 갑옷거치대는 pitch가 변화가 없더군요... 껄껄
+      $this->data[$name."|".$ran]["scale"] = 100;
+      $this->data[$name."|".$ran]["hand"] = $item;
+      $this->data[$name."|".$ran]["helmet"] = $item;
+      $this->data[$name."|".$ran]["chestplate"] = $item;
+      $this->data[$name."|".$ran]["leggings"] = $item;
+      $this->data[$name."|".$ran]["boots"] = $item;
            
-            $this->save();
+      $this->save();
           
-            $inventory->removeItem(Item::get(425, 0, 1));
+      $inventory->removeItem(Item::get(425, 0, 1));
             
-            $player->sendMessage($prefix."갑옷 거치대를 생성하였습니다");
-          }
-        }
-      }
-    }
-    else{
-    
-      if($id == 425){
-    
-        $nbt = new CompoundTag("", [ 
-                     new ListTag("Pos", [
-                     new DoubleTag("", $block->getX() + 0.5),
-                     new DoubleTag("", $block->getY() + 1),
-                     new DoubleTag("", $block->getZ() + 0.5)
-                ]),
-                     new ListTag("Motion", [
-                     new DoubleTag("", 0),
-                     new DoubleTag("", 0),
-                     new DoubleTag("", 0)
-                ]),
-                     new ListTag("Rotation",[
-                     new FloatTag(0, 0),
-                     new FloatTag(0, 0)
-                ])
-        ]);
-       
-        $ran = mt_rand(1, 1000000000);
-        $nbt->setString("owner", $name);
-        $nbt->setString("code", $name."|".$ran);
-      
-        $entity = Entity::createEntity("stand", $player->getLevel(), $nbt);
-        $entity->setNameTag("§r§b".$name."§f의 갑옷 거치대");
-        $entity->setItem("hand", Item::get(0, 0, 0));
-        $entity->setItem("helmet", Item::get(0, 0, 0));
-        $entity->setItem("chestplate", Item::get(0, 0, 0));
-        $entity->setItem("leggings", Item::get(0, 0, 0));
-        $entity->setItem("boots", Item::get(0, 0, 0));
-        $entity->setHealth(100000);
-        $entity->setMaxHealth(100000);
-        $entity->setNameTagVisible(true);
-        $entity->setNameTagAlwaysVisible(true);
-        $entity->spawnToAll();
-      
-        $item = $this->getNBT(Item::get(0, 0, 0));
-      
-        $this->data[$name."|".$ran]["owner"] = $name;
-        $this->data[$name."|".$ran]["tag"] = "§r§b".$name."§f의 갑옷 거치대";
-        $this->data[$name."|".$ran]["yaw"] = 0;
-        //$this->data[$name."|".$ran]["pitch"] = 0; 갑옷거치대는 pitch가 변화가 없더군요... 껄껄
-        $this->data[$name."|".$ran]["scale"] = 100;
-        $this->data[$name."|".$ran]["hand"] = $item;
-        $this->data[$name."|".$ran]["helmet"] = $item;
-        $this->data[$name."|".$ran]["chestplate"] = $item;
-        $this->data[$name."|".$ran]["leggings"] = $item;
-        $this->data[$name."|".$ran]["boots"] = $item;
-      
-        $inventory->removeItem(Item::get(425, 0, 1));
-        
-        $this->save();
-      
-        $player->sendMessage($prefix."갑옷 거치대를 생성하였습니다");
-      }
+      $player->sendMessage($prefix."갑옷 거치대를 생성하였습니다");
     }
   }
   public function onDamage(EntityDamageEvent $e){
