@@ -158,7 +158,7 @@ class ArmorStand extends PluginBase implements Listener {
 				if($damager instanceof Player){
 					$name = strtolower($damager->getName());
 					$owner = strtolower($entity->getOwner());
-					if($owner === $name or $player->isOp()){
+					if($owner === $name or $damager->isOp()){
 						$this->code[$name] = $entity->getCode();
 						// $this->tag[$name] = $entity->getTag();
 						$this->showUI1($damager);
