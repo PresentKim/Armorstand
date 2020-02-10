@@ -77,8 +77,6 @@ class ArmorStand extends PluginBase implements Listener {
 	}
 
 	public function onJoin(PlayerJoinEvent $e){
-		$prefix = $this->prefix;
-
 		$player = $e->getPlayer();
 		$name = strtolower($player->getName());
 		
@@ -151,7 +149,6 @@ class ArmorStand extends PluginBase implements Listener {
 	}
 
 	public function onDamage(EntityDamageEvent $event){
-		$prefix = $this->prefix;
 		$entity = $event->getEntity();
 
 		if($entity instanceof ArmorStandEntity){
@@ -175,13 +172,11 @@ class ArmorStand extends PluginBase implements Listener {
 		$transaction = $event->getTransaction();
 		$player = $transaction->getSource();
 		if($player instanceof Player){
-			$name = strtolower($player->getName());
 			foreach($transaction->getInventories() as $inventory){
 				if($inventory instanceof StandInv){
 					foreach($transaction->getActions() as $action){
 						$source = $action->getSourceItem();
 						$target = $action->getTargetItem();
-						$slot = $action->getSlot();
 						if($source->getNamedTagEntry("ainv") !== null or $target->getNamedTagEntry("ainv") !== null){
 							$event->setCancelled(true);
 						}
@@ -271,7 +266,6 @@ class ArmorStand extends PluginBase implements Listener {
 		$name = strtolower($player->getName());
 		$inventory = $player->getInventory();
 		$code = $this->code[$name];
-		$tag = $this->data[$code]["tag"];
 		foreach($this->getServer()->getLevels() as $level){
 			foreach($level->getEntities() as $entity){
 				if($entity instanceof ArmorStandEntity){
