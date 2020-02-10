@@ -87,17 +87,17 @@ class ArmorStand extends PluginBase implements Listener {
 		}
 	}
 
-	public function onInteract(PlayerInteractEvent $e){
+	public function onInteract(PlayerInteractEvent $event){
 		$prefix = $this->prefix;
 
-		$player = $e->getPlayer();
+		$player = $event->getPlayer();
 		$name = strtolower($player->getName());
 
 		$inventory = $player->getInventory();
 		$item = $inventory->getItemInHand();
 		$id = $item->getId();
 
-		$block = $e->getBlock();
+		$block = $event->getBlock();
 
 		$area = AreaProvider::getInstance()->getArea($player->getLevel(), $block->getX(), $block->getZ());
 		
@@ -405,10 +405,6 @@ class ArmorStandEntity extends Creature {
 
 	public function getName(): string{
 		return "armorstand";
-	}
-
-	public function getMobEquipment(): MobEquipment{
-		return $this->mobEquipment;
 	}
 
 	public function setOwner(Player $player){
