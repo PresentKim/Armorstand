@@ -45,12 +45,8 @@ use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Config;
 use pocketmine\scheduler\Task;
-use ifteam\SimpleArea\SimpleArea;
-use ifteam\SimpleArea\database\rent\RentLoader;
 use ifteam\SimpleArea\database\area\AreaSection;
-use ifteam\SimpleArea\database\area\AreaManager;
 use ifteam\SimpleArea\database\area\AreaProvider;
-use ifteam\SimpleArea\database\user\UserProperties;
 
 class ArmorStand extends PluginBase implements Listener {
 	public static $instance;
