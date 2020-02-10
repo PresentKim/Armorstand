@@ -66,15 +66,15 @@ class ArmorStand extends PluginBase implements Listener {
 	public function onLoad(){
 		self::$instance = $this;
 
-		Entity::registerEntity(stand::class, true, ["minecraft:armor_stand"]);
+		Entity::registerEntity(ArmorStandEntity::class, true, ["minecraft:armor_stand"]);
 	}
 
 	public function onEnable(){
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 
 		@mkdir($this->getDataFolder());
-		$this->EntityData = new Config($this->getDataFolder() . "EntityData.yml", Config::YAML);
-		$this->data = $this->EntityData->getAll();
+		$this->entityData = new Config($this->getDataFolder() . "EntityData.yml", Config::YAML);
+		$this->data = $this->entityData->getAll();
 
 		$task = new ArmorStandTask($this);
 		$this->getScheduler()->scheduleRepeatingTask($task, 1);
@@ -155,29 +155,29 @@ class ArmorStand extends PluginBase implements Listener {
 		}
 	}
 
-	public function onDamage(EntityDamageEvent $e){
+	public function onDamage(EntityDamageEvent $event){
 		$prefix = $this->prefix;
-		$entity = $e->getEntity();
+		$entity = $event->getEntity();
 
-		if($entity instanceof stand){
-			$e->setCancelled(true);
-			if($e instanceof EntityDamageByEntityEvent){
-				$damager = $e->getDamager();
+		if($entity instanceof ArmorStandEntity){
+			$event->setCancelled(true);
+			if($event instanceof EntityDamageByEntityEvent){
+				$damager = $event->getDamager();
 				if($damager instanceof Player){
 					$name = strtolower($damager->getName());
 					$owner = strtolower($entity->getOwner());
 					if($owner === $name or $player->isOp()){
 						$this->code[$name] = $entity->getCode();
 						// $this->tag[$name] = $entity->getTag();
-						$this->UI1($damager);
+						$this->showUI1($damager);
 					}
 				}
 			}
 		}
 	}
 
-	public function onInventoryChange(InventoryTransactionEvent $e){
-		$transaction = $e->getTransaction();
+	public function onInventoryChange(InventoryTransactionEvent $event){
+		$transaction = $event->getTransaction();
 		$player = $transaction->getSource();
 		if($player instanceof Player){
 			$name = strtolower($player->getName());
@@ -188,7 +188,7 @@ class ArmorStand extends PluginBase implements Listener {
 						$target = $action->getTargetItem();
 						$slot = $action->getSlot();
 						if($source->getNamedTagEntry("ainv") !== null or $target->getNamedTagEntry("ainv") !== null){
-							$e->setCancelled(true);
+							$event->setCancelled(true);
 						}
 					}
 				}
@@ -206,7 +206,7 @@ class ArmorStand extends PluginBase implements Listener {
 			// $tag = $this->tag[$name];
 			foreach($this->getServer()->getLevels() as $level){
 				foreach($level->getEntities() as $entity){
-					if($entity instanceof stand){
+					if($entity instanceof ArmorStandEntity){
 						$code = $entity->getCode();
 						$pcode = $this->code[$name];
 						if($code === $pcode){
@@ -232,17 +232,17 @@ class ArmorStand extends PluginBase implements Listener {
 		if($pack instanceof ModalFormResponsePacket and $pack->formId == 66778800){
 			$button = json_decode($pack->formData, true);
 			if($button == 1){
-				$this->UI2($player);
+				$this->showUI2($player);
 			}elseif($button == 2){
-				$this->GUI($player);
+				$this->showGUI($player);
 			}elseif($button == 3){
-				$this->Remove($player);
+				$this->remove($player);
 			}
 		}elseif($pack instanceof ModalFormResponsePacket and $pack->formId == 66778811){
 			$button = json_decode($pack->formData, true);
 			foreach($this->getServer()->getLevels() as $level){
 				foreach($level->getEntities() as $entity){
-					if($entity instanceof stand){
+					if($entity instanceof ArmorStandEntity){
 						$code = $entity->getCode();
 						$pcode = $this->code[$name];
 						if($code === $pcode){
@@ -271,7 +271,7 @@ class ArmorStand extends PluginBase implements Listener {
 		}
 	}
 
-	public function Remove(Player $player){
+	public function remove($player){
 		$prefix = $this->prefix;
 		$name = strtolower($player->getName());
 		$inventory = $player->getInventory();
@@ -279,7 +279,7 @@ class ArmorStand extends PluginBase implements Listener {
 		$tag = $this->data[$code]["tag"];
 		foreach($this->getServer()->getLevels() as $level){
 			foreach($level->getEntities() as $entity){
-				if($entity instanceof stand){
+				if($entity instanceof ArmorStandEntity){
 					$code = $entity->getCode();
 					$pcode = $this->code[$name];
 					if($code === $pcode){
@@ -313,11 +313,11 @@ class ArmorStand extends PluginBase implements Listener {
 		}
 	}
 
-	public function GUI(Player $player){
+	public function showGUI(Player $player){
 		$player->addWindow(new StandInv($this, [], $player->asVector3(), 27, "§l§b[ArmorStand] §f손,투구,흉갑,바지,부츠"));
 	}
 
-	public function UI1(Player $player){
+	public function showUI1(Player $player){
 		$encode = json_encode(["type" => "form","title" => "§l§b[ArmorStand]","content" => "","buttons" => [["text" => "§l§b· §fUI 닫기"],["text" => "§l§b· §f정보 관리"],["text" => "§l§b· §f갑옷 관리"],["text" => "§l§b· §f거치대 회수"]]]);
 
 		$pack = new ModalFormRequestPacket();
@@ -326,7 +326,7 @@ class ArmorStand extends PluginBase implements Listener {
 		$player->dataPacket($pack);
 	}
 
-	public function UI2(Player $player){
+	public function showUI2(Player $player){
 		$name = strtolower($player->getName());
 		$code = $this->code[$name];
 		$tag = $this->data[$code]["tag"];
@@ -341,8 +341,8 @@ class ArmorStand extends PluginBase implements Listener {
 	}
 
 	public function save(){
-		$this->EntityData->setAll($this->data);
-		$this->EntityData->save();
+		$this->entityData->setAll($this->data);
+		$this->entityData->save();
 	}
 
 	public function setItem($entity){
@@ -392,7 +392,7 @@ class ArmorStand extends PluginBase implements Listener {
 	}
 }
 
-class stand extends Creature {
+class ArmorStandEntity extends Creature {
 	const NETWORK_ID = self::ARMOR_STAND;
 	public $width = 0.5;
 	public $height = 1.975;
@@ -518,7 +518,7 @@ class StandInv extends ContainerInventory {
 			}else{
 				foreach($this->plugin->getServer()->getLevels() as $level){
 					foreach($level->getEntities() as $entity){
-						if($entity instanceof stand){
+						if($entity instanceof ArmorStandEntity){
 							$code = $entity->getCode();
 							$pcode = $this->plugin->code[$name];
 							if($code === $pcode){
@@ -578,7 +578,7 @@ class ArmorStandTask extends Task {
 	public function onRun($currentTick){
 		foreach($this->plugin->getServer()->getLevels() as $level){
 			foreach($level->getEntities() as $entity){
-				if($entity instanceof stand){
+				if($entity instanceof ArmorStandEntity){
 					if(isset($this->plugin->data[$entity->namedtag->getString("code")])){
 						$this->plugin->setItem($entity);
 						$this->plugin->setArmor($entity);
