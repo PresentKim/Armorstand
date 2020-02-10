@@ -86,8 +86,7 @@ class ArmorStand extends PluginBase implements Listener {
 		$player = $e->getPlayer();
 		$name = strtolower($player->getName());
 		
-		if(!isset($this->cool[$name]){
-
+		if(!isset($this->cool[$name])){
 			$this->cool[$name] = time();
 		}
 	}
@@ -106,7 +105,7 @@ class ArmorStand extends PluginBase implements Listener {
 
 		$area = AreaProvider::getInstance()->getArea($player->getLevel(), $block->getX(), $block->getZ());
 		
-		if(!isset($this->cool[$name]) return true;
+		if(!isset($this->cool[$name])) return true;
 
 		if($this->cool[$name] == time())
 			return true;
